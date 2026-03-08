@@ -55,14 +55,19 @@ export default function FilterPanel({ filters, setFilters, seasons, utensils, wi
   }
 
   function clearAll() {
-    setFilters({ seasons: ['Spring'], utensils: [], windmills: [], types: [], wonderstone: false, animals: [], fishingRod: 0, hatchet: 0 })
+    setFilters({
+      seasons: ['Spring'], utensils: [], windmills: [],
+      types: [], wonderstone: false, animals: [], fishingRod: 0,
+      hatchet: 0, mushroomLog: false, beehive: false
+    })
   }
 
   const hasFilters = filters.seasons.length > 0 || filters.utensils.length > 0 ||
     filters.windmills.length > 0 || filters.types.length > 0 ||
     filters.wonderstone || filters.animals.length > 0 ||
-    filters.fishingRod > 0 || filters.hatchet > 0
-    
+    filters.fishingRod > 0 || filters.hatchet > 0 ||
+    filters.mushroomLog || filters.beehive
+
   return (
     <div className="filter-panel-inner">
       <ToggleGroup label="Season" options={seasons} active={filters.seasons} onToggle={v => toggle('seasons', v)} />
@@ -78,6 +83,24 @@ export default function FilterPanel({ filters, setFilters, seasons, utensils, wi
             onClick={() => setFilters({ ...filters, wonderstone: !filters.wonderstone })}
           >
             ✦ Wonderstone
+          </button>
+        </div>
+      </div>
+
+      <div className="filter-group">
+        <h3>Farm Structures</h3>
+        <div className="toggle-buttons">
+          <button
+            className={`toggle-btn ${filters.mushroomLog ? 'active' : ''}`}
+            onClick={() => setFilters({ ...filters, mushroomLog: !filters.mushroomLog })}
+          >
+            Mushroom Log
+          </button>
+          <button
+            className={`toggle-btn ${filters.beehive ? 'active' : ''}`}
+            onClick={() => setFilters({ ...filters, beehive: !filters.beehive })}
+          >
+            Beehive
           </button>
         </div>
       </div>
@@ -100,13 +123,7 @@ export default function FilterPanel({ filters, setFilters, seasons, utensils, wi
       <div className="filter-group">
         <h3>Fishing Rod Level</h3>
         <div className="toggle-buttons">
-          <button
-            className={`toggle-btn ${filters.fishingRod === 0 ? 'active' : ''}`}
-            onClick={() => setFilters({ ...filters, fishingRod: 0 })}
-          >
-            None
-          </button>
-          {[1,2,3,4,5,6].map(level => (
+          {[1,2,3,4,5].map(level => (
             <button
               key={level}
               className={`toggle-btn ${filters.fishingRod === level ? 'active' : ''}`}
@@ -121,13 +138,7 @@ export default function FilterPanel({ filters, setFilters, seasons, utensils, wi
       <div className="filter-group">
         <h3>Hatchet Level</h3>
         <div className="toggle-buttons">
-          <button
-            className={`toggle-btn ${filters.hatchet === 0 ? 'active' : ''}`}
-            onClick={() => setFilters({ ...filters, hatchet: 0 })}
-          >
-            None
-          </button>
-          {[1,2,3,4,5,6].map(level => (
+          {[1,2,3,4,5].map(level => (
             <button
               key={level}
               className={`toggle-btn ${filters.hatchet === level ? 'active' : ''}`}

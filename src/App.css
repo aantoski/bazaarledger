@@ -21,6 +21,12 @@
   --tag-crop:     #3d5e30;
   --tag-processed:#2e4f5e;
   --tag-recipe:   #5e3a2e;
+  --tag-forageable: #635A63;
+  --tag-animal: #87213e;
+  --tag-pantry: #8b7a3a;
+  --tag-fish: #235d84; 
+  --tag-honey: #8b6a1a;
+  --tag-mushroom: #7a3a6a;
 }
 
 /* ── Reset ─────────────────────────────────────────────────── */
@@ -38,7 +44,7 @@ body {
 /* ── Layout ────────────────────────────────────────────────── */
 .app-layout {
   display: grid;
-  grid-template-columns: 240px 1fr 320px;
+  grid-template-columns: 325px 1fr 300px;
   height: 100vh;
   overflow: hidden;
 }
@@ -198,9 +204,15 @@ body {
   font-weight: 600;
 }
 
-.tag-crop      { background: var(--tag-crop);      color: #8fba7a; border: 1px solid #4a7c3a; }
-.tag-processed { background: var(--tag-processed);  color: #7aaaba; border: 1px solid #3a6a8b; }
-.tag-recipe    { background: var(--tag-recipe);     color: #ba8a7a; border: 1px solid #8b4a3a; }
+.tag-crop             { background: var(--tag-crop);       color: #8fba7a; border: 1px solid #4a7c3a; }
+.tag-recipe           { background: var(--tag-recipe);     color: #ba8a7a; border: 1px solid #8b4a3a; }
+.tag-processed        { background: var(--tag-processed);  color: #7aaaba; border: 1px solid #3a6a8b; }
+.tag-forageable       { background: var(--tag-forageable);       color: #a89ea8; border: 1px solid #4a424a; }
+.tag-animal-by-product{ background: var(--tag-animal);  color: #be7086; border: 1px solid #79233c; }
+.tag-pantry           { background: var(--tag-pantry);  color: #c9c27a; border: 1px solid #76693c; }
+.tag-fish             { background: var(--tag-fish);  color: #599ecc; border: 1px solid #173e57; }
+.tag-mushroom         { background: var(--tag-mushroom);     color: #c47ab0; border: 1px solid #592a4d; }
+.tag-honey            { background: var(--tag-honey);     color: #c9a84a; border: 1px solid #6c5113; }
 .tag-utensil   { background: var(--bg-3); color: var(--text-dim); border: 1px solid var(--border); }
 .tag-windmill  { background: var(--bg-3); color: var(--gold-dim); border: 1px solid var(--border-light); }
 .tag-category  { background: var(--bg-3); color: var(--text-dim); border: 1px solid var(--border); }

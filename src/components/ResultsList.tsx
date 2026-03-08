@@ -6,10 +6,8 @@ type Props = {
   onSelect: (e: ListEntry) => void
 }
 
-const TYPE_COLORS: Record<string, string> = {
-  Crop: 'tag-crop',
-  Processed: 'tag-processed',
-  Recipe: 'tag-recipe',
+function typeToClass(type: string): string {
+  return 'tag-' + type.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
 }
 
 export default function ResultsList({ entries, selected, onSelect }: Props) {
@@ -25,7 +23,7 @@ export default function ResultsList({ entries, selected, onSelect }: Props) {
         >
           <span className="result-name">{e.name}</span>
           <div className="result-meta">
-            <span className={`tag ${TYPE_COLORS[e.type]}`}>{e.type}</span>
+            <span className={`tag ${typeToClass(e.type)}`}>{e.type}</span>
             <span className="result-price">{e.sell_price?.toLocaleString()}G</span>
           </div>
         </li>
