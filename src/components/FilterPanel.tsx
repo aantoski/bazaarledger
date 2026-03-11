@@ -1,5 +1,6 @@
 import type { Filters } from '../App'
 import type { Animal } from '../hooks/useAnimals'
+import type { PantryVariant } from '../hooks/usePantry'
 
 type Props = {
   filters: Filters
@@ -9,6 +10,7 @@ type Props = {
   windmills: string[]
   types: string[]
   animals: Animal[]
+  pantryVariants: PantryVariant[]
 }
 
 function ToggleGroup({
@@ -37,7 +39,7 @@ function ToggleGroup({
   )
 }
 
-export default function FilterPanel({ filters, setFilters, seasons, utensils, windmills, types, animals }: Props) {
+export default function FilterPanel({ filters, setFilters, seasons, utensils, windmills, types, animals, pantryVariants }: Props) {
   function toggle(key: keyof Pick<Filters, 'seasons' | 'utensils' | 'windmills' | 'types'>, val: string) {
     const current = filters[key]
     setFilters({
@@ -54,19 +56,27 @@ export default function FilterPanel({ filters, setFilters, seasons, utensils, wi
     })
   }
 
-  function clearAll() {
+  function togglePantry(id: number) {
+    const current = filters.pantry
     setFilters({
-      seasons: ['Spring'], utensils: [], windmills: [],
-      types: [], wonderstone: false, animals: [], fishingRod: 0,
-      hatchet: 0, mushroomLog: false, beehive: false
+      ...filters,
+      pantry: current.includes(id) ? current.filter(p => p !== id) : [...current, id]
     })
   }
 
-  const hasFilters = filters.seasons.length > 0 || filters.utensils.length > 0 ||
-    filters.windmills.length > 0 || filters.types.length > 0 ||
-    filters.wonderstone || filters.animals.length > 0 ||
-    filters.fishingRod > 0 || filters.hatchet > 0 ||
-    filters.mushroomLog || filters.beehive
+  function clearAll() {
+  setFilters({
+    seasons: ['Spring'], utensils: [], windmills: [],
+    types: [], wonderstone: false, animals: [], fishingRod: 0,
+    hatchet: 0, mushroomLog: false, beehive: false, pantry: []
+  })
+}
+
+const hasFilters = filters.seasons.length > 0 || filters.utensils.length > 0 ||
+  filters.windmills.length > 0 || filters.types.length > 0 ||
+  filters.wonderstone || filters.animals.length > 0 ||
+  filters.fishingRod > 0 || filters.hatchet > 0 ||
+  filters.mushroomLog || filters.beehive || filters.pantry.length > 0
 
   return (
     <div className="filter-panel-inner">
@@ -102,6 +112,21 @@ export default function FilterPanel({ filters, setFilters, seasons, utensils, wi
           >
             Beehive
           </button>
+        </div>
+      </div>
+
+      <div className="filter-group">
+        <h3>Pantry</h3>
+        <div className="toggle-buttons">
+          {pantryVariants.map(pv => (
+            <button
+              key={pv.id}
+              className={`toggle-btn ${filters.pantry.includes(pv.id) ? 'active' : ''}`}
+              onClick={() => togglePantry(pv.id)}
+            >
+              {pv.display_name}
+            </button>
+          ))}
         </div>
       </div>
 
