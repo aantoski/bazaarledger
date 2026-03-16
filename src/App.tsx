@@ -36,7 +36,8 @@ function App() {
   // const { entries, loading } = useListEntries()
   const { entries, loading, itemNameMap, goodNameMap, 
           recipeNameMap, chainMap, pgiDirectMap, goodMachineMap, 
-          pgiRecipeChainMap, pgiGroupStructure } = useListEntries()
+          pgiRecipeChainMap, pgiGroupStructure, recipeEntryMap,
+          itemBuyPriceMap} = useListEntries()
   const seasonMap = useItemSeasons()
   const { animals, animalProductMap } = useAnimals()
   const pantryVariants = usePantry()
@@ -316,6 +317,9 @@ function App() {
           pgiDirectMap={pgiDirectMap}
           goodMachineMap={goodMachineMap}
           pgiRecipeChainMap={pgiRecipeChainMap}
+          recipeEntryMap={recipeEntryMap}
+          pantryVariants={pantryVariants}
+          itemBuyPriceMap={itemBuyPriceMap}
         />
       </aside>
     </div>

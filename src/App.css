@@ -27,6 +27,7 @@
   --tag-fish: #235d84; 
   --tag-honey: #8b6a1a;
   --tag-mushroom: #7a3a6a;
+  --accent: var(--gold);
 }
 
 /* ── Reset ─────────────────────────────────────────────────── */
@@ -139,12 +140,18 @@ body {
 .results-panel {
   background: var(--bg);
   border-right: 1px solid var(--border);
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .results-list {
   list-style: none;
   padding: 0.5rem;
+  min-height: 0;
+  flex: 1;           /* ADD */
+  overflow-y: auto;  /* ADD */
 }
 
 .result-item {
@@ -334,7 +341,7 @@ body {
 }
 
 .tier-label {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   letter-spacing: 0.05em;
 }
@@ -422,6 +429,10 @@ body {
   margin-left: 16px;
   border-left: 1px solid rgba(255,255,255,0.08);
   padding-left: 8px;
+  /* display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin-bottom: 0.2rem; */
 }
 
 .tree-bullet {
@@ -455,6 +466,151 @@ body {
   gap: 0.3rem;
   font-size: 0.82rem;
   color: var(--text-muted);
+}
+
+.results-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;  
+  overflow: hidden;
+}
+
+.results-toolbar {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.price-mode-toggle {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.mode-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.mode-btn:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+.mode-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1a1208;
+  font-weight: 600;
+}
+
+.price-mode-note {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.production-time {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.production-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.85rem;
+}
+
+.production-label {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.production-value {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.profit-highlight {
+  color: var(--accent);
+  font-family: 'Cinzel', serif;
+}
+
+.yield-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.pantry-obtain {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.pantry-path {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+
+.pantry-path-header {
+  margin-bottom: 0.2rem;
+}
+
+.pantry-option-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+}
+
+.pantry-path-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.pantry-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.85rem;
+}
+
+.pantry-label {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+.pantry-value {
+  color: var(--text);
+}
+
+.profit-negative {
+  color: var(--red);
+  font-family: 'Cinzel', serif;
 }
 
 /* ── States ────────────────────────────────────────────────── */
