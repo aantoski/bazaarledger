@@ -45,7 +45,7 @@ select
                 0
             )
         -- regular crop: seed price divided by yield
-        when i.item_type = 'Crop' and cd.yield is not null and cd.yield > 0
+        when i.item_type in ('Crop', 'Mushroom') and cd.yield is not null and cd.yield > 0
             then round(
                 coalesce(p.cheapest_buy_price, i.buy_price)::numeric / cd.yield,
                 2
