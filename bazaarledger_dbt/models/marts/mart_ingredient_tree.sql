@@ -3,13 +3,15 @@
 with recursive
 
 direct_ingredients as (
+    -- direct raw item ingredients
     select
-        ri.recipe_id                                as recipe_id,
-        ri.recipe_name                              as recipe_name,
+        ri.recipe_id,
+        ri.recipe_name,
+        ri.ingredient_group,
         ri.quantity::numeric                        as parent_quantity,
         ri.item_id                                  as raw_item_id,
         ri.item_name                                as raw_item_name,
-        ic.cost_per_unit                            as unit_cost,
+        ic.cost_per_unit,
         (ri.quantity * coalesce(ic.cost_per_unit, 0))::numeric as total_cost,
         null::int                                   as input_recipe_id
     from {{ ref('stg_recipe_ingredients') }} ri
@@ -19,13 +21,15 @@ direct_ingredients as (
 
     union all
 
+    -- direct processed good ingredients expanded to raw items
     select
         ri.recipe_id,
         ri.recipe_name,
+        ri.ingredient_group,
         ri.quantity::numeric                        as parent_quantity,
         pgc.raw_item_id,
         pgc.raw_item_name,
-        pgc.unit_cost,
+        pgc.unit_cost                               as cost_per_unit,
         (ri.quantity * pgc.total_cost)::numeric     as total_cost,
         null::int                                   as input_recipe_id
     from {{ ref('stg_recipe_ingredients') }} ri
@@ -35,13 +39,15 @@ direct_ingredients as (
 
     union all
 
+    -- sub-recipe pointers
     select
         ri.recipe_id,
         ri.recipe_name,
+        ri.ingredient_group,
         ri.quantity::numeric                        as parent_quantity,
         null::int                                   as raw_item_id,
         null::text                                  as raw_item_name,
-        null::numeric                               as unit_cost,
+        null::numeric                               as cost_per_unit,
         null::numeric                               as total_cost,
         ri.input_recipe_id
     from {{ ref('stg_recipe_ingredients') }} ri
@@ -50,13 +56,15 @@ direct_ingredients as (
 
 recipe_tree as (
 
+    -- BASE CASE
     select
         di.recipe_id                                as root_recipe_id,
         di.recipe_name                              as root_recipe_name,
+        di.ingredient_group                         as root_ingredient_group,
         di.raw_item_id,
         di.raw_item_name,
         di.parent_quantity                          as quantity,
-        di.unit_cost,
+        di.cost_per_unit,
         di.total_cost,
         1                                           as depth,
         di.input_recipe_id
@@ -64,13 +72,15 @@ recipe_tree as (
 
     union all
 
+    -- RECURSIVE CASE: follow sub-recipe chains
     select
         rt.root_recipe_id,
         rt.root_recipe_name,
+        rt.root_ingredient_group,               -- preserve the parent's group!
         di2.raw_item_id,
         di2.raw_item_name,
         (rt.quantity * di2.parent_quantity)::numeric as quantity,
-        di2.unit_cost,
+        di2.cost_per_unit,
         (rt.quantity * coalesce(di2.total_cost, 0))::numeric as total_cost,
         rt.depth + 1                                as depth,
         di2.input_recipe_id
@@ -85,15 +95,16 @@ select
     root_recipe_id,
     root_recipe_name,
     'recipe'                                        as root_type,
+    root_ingredient_group,
     raw_item_id,
     raw_item_name,
     sum(quantity)                                   as total_quantity,
-    max(unit_cost)                                  as unit_cost,
+    max(cost_per_unit)                              as unit_cost,
     sum(total_cost)                                 as total_cost,
     max(depth)                                      as max_depth
 from recipe_tree
 where raw_item_id is not null
-group by root_recipe_id, root_recipe_name, raw_item_id, raw_item_name
+group by root_recipe_id, root_recipe_name, root_ingredient_group, raw_item_id, raw_item_name
 
 union all
 
@@ -101,6 +112,7 @@ select
     root_processed_good_id                          as root_recipe_id,
     root_processed_good_name                        as root_recipe_name,
     'processed'                                     as root_type,
+    null::int                                       as root_ingredient_group,
     raw_item_id,
     raw_item_name,
     total_quantity,

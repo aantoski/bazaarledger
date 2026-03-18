@@ -1,0 +1,106 @@
+version: 2
+
+models:
+  - name: stg_items
+    description: "Cleaned and renamed items table. Contains all obtainable items in Grand Bazaar including crops, fish, forageables, and pantry goods"
+    columns:
+      - name: item_id
+        description: "Primary key for items"
+      - name: item_name
+        description: "Display name of the item"
+      - name: item_type
+        description: "Category of item: Crop, Fish, Forageable, Pantry, etc"
+      - name: sell_price
+        description: "Gold earned when selling this item at the bazaar"
+      - name: buy_price
+        description: "Seed or purchase price. For crops this is the seed cost"
+      - name: is_crop_variant
+        description: "True if this is a giant/special variant of a base crop"
+      - name: base_item_id
+        description: "For crop variants, the ID of the base crop this derives from"
+
+  - name: stg_item_costs
+    description: "Pre-calculated cost per unit for every item, accounting for crop yields, crop variants, and purchasable prices. Used as the foundation for all profitability calculations"
+    columns:
+      - name: item_id
+        description: "Primary key"
+      - name: cost_per_unit
+        description: "The true cost to obtain one unit. For crops: seed_price / yield. For crop variants: base_crop seed_price / base_crop yield. For free items (fish, forageables): 0"
+      - name: seed_price
+        description: "Raw purchase price before yield adjustment"
+      - name: yield
+        description: "Number of units produced per seed/planting"
+
+  - name: stg_item_seasons
+    description: "Maps items to the seasons in which they are available. An item with no season entries is available year-round"
+    columns:
+      - name: item_season_id
+        description: "Primary key"
+      - name: item_id
+        description: "Foreign key to stg_items"
+      - name: season
+        description: "Season name: Spring, Summer, Autumn, Winter"
+
+  - name: stg_crop_details
+    description: "Growing details for crops including days to maturity, regrow behavior, and yield per harvest"
+    columns:
+      - name: days_to_grow
+        description: "Number of in-game days from planting to first harvest"
+      - name: regrows
+        description: "True if the crop regrows after harvesting without replanting"
+      - name: yield
+        description: "Number of items produced per harvest"
+
+  - name: stg_recipes
+    description: "All cookable recipes in Grand Bazaar with their sell prices, categories, and required utensil"
+    columns:
+      - name: recipe_id
+        description: "Primary key"
+      - name: recipe_name
+        description: "Display name of the recipe"
+      - name: category
+        description: "Recipe category: Main Dishes, Sides, Desserts, Soups, Salads, Other Recipes"
+      - name: sell_price
+        description: "Gold earned when selling this dish at the bazaar"
+      - name: utensil
+        description: "Required cooking utensil (e.g. Pot, Pan, Oven)"
+      - name: where_to_get
+        description: "How the recipe is obtained (e.g. starter, shop, friendship reward)"
+
+  - name: stg_recipe_ingredients
+    description: "Ingredients for each recipe. Each row is one ingredient slot. ingredient_group represents OR logic — rows with the same group number are alternatives and only one is needed"
+    columns:
+      - name: recipe_id
+        description: "Foreign key to stg_recipes"
+      - name: ingredient_group
+        description: "OR group number. Multiple rows with the same recipe_id and ingredient_group are alternative ingredients — the player chooses one"
+      - name: item_id
+        description: "If set, this ingredient is a raw item"
+      - name: input_good_id
+        description: "If set, this ingredient is a processed good"
+      - name: input_recipe_id
+        description: "If set, this ingredient is another recipe used as input"
+      - name: quantity
+        description: "How many of this ingredient are required"
+
+  - name: stg_processed_materials
+    description: "Inputs required to produce each processed good. Mirrors the structure of stg_recipe_ingredients — ingredient_group represents OR alternatives"
+    columns:
+      - name: processed_good_id
+        description: "Foreign key to processed_goods"
+      - name: ingredient_group
+        description: "OR group — alternatives for this input slot"
+      - name: item_id
+        description: "Raw item input if set"
+      - name: input_good_id
+        description: "Processed good input if set (chains of processing)"
+      - name: input_recipe_id
+        description: "Recipe input if set"
+
+  - name: stg_purchasable_goods
+    description: "Items and processed goods that can be purchased from shops, with their buy prices and vendor locations"
+    columns:
+      - name: buy_price
+        description: "Gold cost to purchase from vendor"
+      - name: where_to_buy
+        description: "Shop or vendor name where this can be purchased"

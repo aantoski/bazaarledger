@@ -1,0 +1,84 @@
+version: 2
+
+models:
+  - name: mart_processed_good_costs
+    description: "Fully resolved raw ingredient breakdown for every processed good in Grand Bazaar. Uses a recursive CTE to follow chains of processed goods up to 15 levels deep, ultimately resolving every processed good to its constituent raw items (crops, fish, forageables). Used as a pre-materialized table to avoid recursive view issues in downstream models"
+    columns:
+      - name: root_processed_good_id
+        description: "ID of the processed good being costed"
+      - name: root_processed_good_name
+        description: "Name of the processed good being costed"
+      - name: raw_item_id
+        description: "ID of the raw item at the bottom of the ingredient chain"
+      - name: raw_item_name
+        description: "Name of the raw item"
+      - name: total_quantity
+        description: "Total quantity of this raw item needed to produce one unit of the processed good"
+      - name: unit_cost
+        description: "Cost per unit of the raw item"
+      - name: total_cost
+        description: "Total cost contribution of this raw item"
+      - name: max_depth
+        description: "How many processing steps deep this raw item is"
+
+  - name: mart_ingredient_tree
+    description: "Fully flattened ingredient tree for all recipes and processed goods. Uses a recursive CTE to resolve every ingredient chain down to raw items. Preserves ingredient_group for OR logic handling. The root_type column distinguishes recipe vs processed good roots"
+    columns:
+      - name: root_recipe_id
+        description: "ID of the root recipe or processed good"
+      - name: root_recipe_name
+        description: "Name of the root recipe or processed good"
+      - name: root_type
+        description: "Whether the root is a 'recipe' or 'processed' good"
+      - name: root_ingredient_group
+        description: "The ingredient group (OR slot) this raw item belongs to at the top level. Used to pick cheapest alternative per slot"
+      - name: raw_item_id
+        description: "ID of the resolved raw ingredient"
+      - name: raw_item_name
+        description: "Name of the resolved raw ingredient"
+      - name: total_quantity
+        description: "Total quantity of this raw item needed"
+      - name: unit_cost
+        description: "Cost per unit of the raw item from stg_item_costs"
+      - name: total_cost
+        description: "Total cost of this raw item contribution"
+      - name: max_depth
+        description: "Maximum recursion depth reached to resolve this ingredient"
+
+  - name: mart_recipe_costs
+    description: "Pre-calculated base ingredient costs for every recipe, using the cheapest available option per ingredient group. Handles raw items and processed good alternatives. Used as an intermediate table so sub-recipe costs in mart_recipe_profitability use the correctly optimized cost rather than the inflated sum-all-options cost from mart_ingredient_tree"
+    columns:
+      - name: recipe_id
+        description: "Primary key, foreign key to recipes"
+      - name: base_ingredient_cost
+        description: "Total ingredient cost using cheapest option per ingredient group, excluding sub-recipe inputs"
+
+  - name: mart_recipe_profitability
+    description: "Full profit and loss analysis for all 266 recipes in Grand Bazaar. For each recipe, calculates the minimum possible ingredient cost by selecting the cheapest alternative per ingredient group, then computes gross profit and margin. Sub-recipe costs are resolved using mart_recipe_costs to ensure correct option-aware pricing propagates through recipe chains"
+    columns:
+      - name: recipe_id
+        description: "Primary key"
+      - name: recipe_name
+        description: "Display name"
+      - name: category
+        description: "Recipe category"
+      - name: sell_price
+        description: "Bazaar sell price in gold"
+      - name: total_ingredient_cost
+        description: "Minimum possible ingredient cost using cheapest alternatives per group"
+      - name: gross_profit
+        description: "sell_price minus total_ingredient_cost"
+      - name: profit_margin_pct
+        description: "Gross profit as a percentage of sell price"
+      - name: profitability_status
+        description: "profitable, unprofitable, or incomplete"
+
+  - name: mart_item_catalog
+    description: "Wide table enriching every item with its seasons, crop details, tool requirements, and cheapest purchase price. Seasons are aggregated into an array for easy filtering"
+    columns:
+      - name: item_id
+        description: "Primary key"
+      - name: item_name
+        description: "Display name"
+      - name: seasons
+        description: "Array of seasons this item is available in - Empty array means year-round"
