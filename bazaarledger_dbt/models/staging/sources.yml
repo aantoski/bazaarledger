@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: public
+    database: postgres
+    schema: public
+    tables:
+      - name: items
+      - name: item_seasons
+      - name: item_types
+      - name: crop_details
+      - name: recipes
+      - name: recipe_ingredients
+      - name: processed_goods
+      - name: processed_materials
+      - name: purchasable_goods
+      - name: machines
+      - name: animals
+      - name: animal_products
+      - name: tool_requirements
+      - name: utensils
+      - name: pantry_variants
