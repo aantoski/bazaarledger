@@ -1,4 +1,4 @@
-import type { ListEntry } from '../hooks/useItems'
+import type { ListEntry } from '../types/ListEntry'
 import type { PantryVariant } from '../hooks/usePantry'
 
 type Props = {

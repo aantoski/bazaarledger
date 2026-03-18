@@ -5,7 +5,7 @@ import { useAnimals } from './hooks/useAnimals'
 import FilterPanel from './components/FilterPanel'
 import ResultsList from './components/ResultsList'
 import DetailPanel from './components/DetailPanel'
-import type { ListEntry } from './hooks/useItems'
+import type { ListEntry } from './types/ListEntry'
 import { usePantry } from './hooks/usePantry'
 
 import './App.css'
